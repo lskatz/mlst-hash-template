@@ -31,7 +31,7 @@ sub main{
   open(my $allelesFh, ">", "$$settings{out}/alleles.tsv") or die "ERROR: could not write to $$settings{out}/alleles.tsv";
 
   # allele calling, sequencing tech, assembler
-  print $allelesFh join("\t", "# locus","allele","hash","Allele-caller", "Allele-caller-version", "Sequencing-platform", "Sequencing-platform-model", "Assembler", "Assembler-version")."\n";
+  print $allelesFh join("\t", "# locus","allele","hash-type") ."\n";
   for my $f(@ARGV){
     digestFasta($f, $refFh, $allelesFh, $settings);
   }
