@@ -15,3 +15,7 @@ In the db folder, each scheme has two files.
    * `alleles.tsv` can be chunked into files of at most 500k lines to avoid having huge files
       * These need to be concatenated later at time of use
 
+## Example
+
+    perl scripts/digestFasta.pl t/senterica/*.tfa --out senterica.hex --force
+
