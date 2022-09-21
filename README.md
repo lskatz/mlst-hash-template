@@ -19,3 +19,9 @@ In the db folder, each scheme has two files.
 
     perl scripts/digestFasta.pl t/senterica/*.tfa --out senterica.hex --force
 
+## Installation
+
+1. Clone the repo
+2. Put `scripts` into your PATH
+3. Requires BioPerl to read the fasta files
+
