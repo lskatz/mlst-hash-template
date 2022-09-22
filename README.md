@@ -17,7 +17,8 @@ In the db folder, each scheme has two files.
 
 ## Example
 
-    perl scripts/digestFasta.pl t/senterica/*.tfa --out senterica.hex --force
+    mkdir -v db
+    perl scripts/digestFasta.pl t/senterica/*.tfa --out db/senterica --force
 
 ## Installation
 
