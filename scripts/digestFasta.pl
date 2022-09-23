@@ -6,6 +6,7 @@ use Data::Dumper;
 use Getopt::Long;
 use File::Basename qw/basename/;
 use Digest::MD5 qw/md5_base64/;
+use Bio::SeqIO;
 
 use version 0.77;
 our $VERSION="0.2";
