@@ -9,11 +9,11 @@ jobs:
       matrix: 
         perl: ["5.36.0", "5.34.1"]
     steps:
-      - run: sudo apt-get -y install tree libberkeleydb-perl libdb-dev bioperl perl cpanminus curl build-essential bioperl-run
+      #- run: sudo apt-get -y install tree libberkeleydb-perl libdb-dev bioperl perl cpanminus curl build-essential bioperl-run
       - uses: shogo82148/actions-setup-perl@v1
         with:
           perl-version: ${{ matrix.perl }}
-          install-modules: Bio::Perl Bio::SeqIO
+          #install-modules: Bio::Perl Bio::SeqIO
           multi-thread: true
       - uses: actions/checkout@v3
       - run: perl -V
