@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 reads fasta file(s) and creates a database in the hashsum format
 The fasta file(s) must be one locus per line. The first allele is the assumed reference.

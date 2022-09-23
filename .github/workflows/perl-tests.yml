@@ -1,5 +1,5 @@
 on: push
-name: tests
+name: perl-tests
 
 jobs:
   run:
