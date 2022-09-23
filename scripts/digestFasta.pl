@@ -6,7 +6,6 @@ use Data::Dumper;
 use Getopt::Long;
 use File::Basename qw/basename/;
 use Digest::MD5 qw/md5_base64/;
-use Bio::SeqIO;
 
 use version 0.77;
 our $VERSION="0.2";
@@ -33,6 +32,7 @@ sub main{
   # allele calling, sequencing tech, assembler
   print $allelesFh join("\t", "# locus","allele","hash-type") ."\n";
   for my $f(@ARGV){
+    logmsg "Processing $f";
     digestFasta($f, $refFh, $allelesFh, $settings);
   }
 
@@ -45,15 +45,17 @@ sub main{
 sub digestFasta{
   my($f, $refFh, $allelesFh, $settings) = @_;
   
-  my $in=Bio::SeqIO->new(-file=>$f);
-  my $numSeqs = 0;
-  while(my $seqObj = $in->next_seq){
 
-    my $seq = $seqObj->seq;
-    my $id  = $seqObj->id;
+  my $numSeqs = 0;
+  open(my $seqFh, "<", "$f") or die "ERROR: could not open $f for reading";
+  my @aux = undef;
+  my ($id, $seq);
+  my ($n, $slen, $comment, $qlen) = (0, 0, 0);
+  while ( ($id, $seq, undef) = readfq($seqFh, \@aux)) {
+ 
     my $hash = md5_base64($seq);
     my ($locus, $allele) = split(/_/, $id);
-
+ 
     # Check if this is the first allele and if so, 
     # print out the sequence to reference alleles.
     # Increment the number of seqs
@@ -69,12 +71,55 @@ sub digestFasta{
   return $numSeqs;
 }
 
+# Read fq subroutine from Andrea which was inspired by lh3
+sub readfq {
+    my ($fh, $aux) = @_;
+    @$aux = [undef, 0] if (!(@$aux));	# remove deprecated 'defined'
+    return if ($aux->[1]);
+    if (!defined($aux->[0])) {
+        while (<$fh>) {
+            chomp;
+            if (substr($_, 0, 1) eq '>' || substr($_, 0, 1) eq '@') {
+                $aux->[0] = $_;
+                last;
+            }
+        }
+        if (!defined($aux->[0])) {
+            $aux->[1] = 1;
+            return;
+        }
+    }
+    my $name = /^.(\S+)/? $1 : '';
+    my $comm = /^.\S+\s+(.*)/? $1 : ''; # retain "comment"
+    my $seq = '';
+    my $c;
+    $aux->[0] = undef;
+    while (<$fh>) {
+        chomp;
+        $c = substr($_, 0, 1);
+        last if ($c eq '>' || $c eq '@' || $c eq '+');
+        $seq .= $_;
+    }
+    $aux->[0] = $_;
+    $aux->[1] = 1 if (!defined($aux->[0]));
+    return ($name, $seq) if ($c ne '+');
+    my $qual = '';
+    while (<$fh>) {
+        chomp;
+        $qual .= $_;
+        if (length($qual) >= length($seq)) {
+            $aux->[0] = undef;
+            return ($name, $seq, $comm, $qual);
+        }
+    }
+    $aux->[1] = 1;
+    return ($name, $seq, $comm);
+}
 
 sub usage{
   print "$0: reads fasta file(s) and creates a database in the hashsum format
   The fasta file(s) must be one locus per line. The first allele is the assumed reference.
   Each sequence ID must have the format locus_allele.
-
   Usage: $0 [options] file1.fasta...
   --out    An output folder which will contain a reference fasta file and a TSV of alleles
   --help   This useful help menu
