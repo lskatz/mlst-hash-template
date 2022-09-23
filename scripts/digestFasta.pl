@@ -6,10 +6,9 @@ use Data::Dumper;
 use Getopt::Long;
 use File::Basename qw/basename/;
 use Digest::MD5 qw/md5_base64/;
-use Bio::SeqIO;
 
 use version 0.77;
-our $VERSION="0.1";
+our $VERSION="0.2";
 
 local $0 = basename $0;
 sub logmsg{local $0=basename $0; print STDERR "$0: @_\n";}
@@ -77,7 +76,6 @@ sub usage{
 
   Usage: $0 [options] file1.fasta...
   --out    An output folder which will contain a reference fasta file and a TSV of alleles
-  --hash   default:md5
   --help   This useful help menu
   \n";
   exit 0;

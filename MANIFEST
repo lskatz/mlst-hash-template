@@ -1,0 +1,14 @@
+LICENSE
+Makefile.PL
+MANIFEST			This list of files
+README.md
+scripts/digestFasta.pl
+t/01_makeDb.t
+t/senterica/aroC.tfa
+t/senterica/dnaN.tfa
+t/senterica/hemD.tfa
+t/senterica/hisD.tfa
+t/senterica/purE.tfa
+t/senterica/senterica.txt
+t/senterica/sucA.tfa
+t/senterica/thrA.tfa
