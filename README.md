@@ -17,12 +17,23 @@ In the db folder, each scheme has two files.
 
 ## Example
 
+### python
+
     mkdir -v db
-    perl scripts/digestFasta.pl t/senterica/*.tfa --out db/senterica --force
+    python3 scripts/digestFasta.py t/senterica/*.tfa --out db/senterica.dbhpy --force
+
+### perl
+
+    mkdir -v db
+    perl scripts/digestFasta.pl t/senterica/*.tfa --out db/senterica.dbhpl --force
 
 ## Installation
 
 1. Clone the repo
 2. Put `scripts` into your PATH
-3. Requires BioPerl to read the fasta files
+
+## Usage
+
+To add your own database, use this repo as a template and then add your database using the scripts.
+Make a new repo with it.
 
