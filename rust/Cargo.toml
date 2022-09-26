@@ -1,0 +1,11 @@
+[package]
+name = "mlst-hash-template-rust"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+bio = '0.36'
+md5 = '0.7.0'
+base64 = '0.13.0'
