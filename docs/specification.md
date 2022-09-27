@@ -5,7 +5,14 @@ has many alleles.
 The locus has a reference allele that can be used to match query sequences against.
 The other alleles are hashed such that only exact matches can be found in a query.
 
-The folder name is the name of the database.
+In many other allele databases, the loci have alleles with integer identifiers.
+Here, we use hashsum identifiers. Therefore, databases will be able to be merged
+and compared universally. 
+"Allele number 1 of locus 1" is unfortunately ambugiuous in a decentralized database or across multiple databases of the same type.
+However, allele `FF..FF` is unambiguous between schemes of the same hashsum algorithm.
+Therefore, merging alleles from different hash allele databases should be trivial and unambiguous.
+
+The basic structure is that the folder name is the name of the database.
 Each database is a folder with these files.
 
 * refs.fasta
