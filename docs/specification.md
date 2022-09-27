@@ -55,5 +55,6 @@ The fields:
    * different attributes are separated with `;`.
    * defined attributes are allele-caller, allele-caller-version, sequencing-platform, sequencing-platform-model, assembler, assembler-version
    * Fields with `version` should have values in semver format, e.g., `3.0.0`.
-   * example attributes: allele-caller=chewbbaca;allele-caller-version=2
+   * Values should be quoted. Values cannot have the `"` character because it is reserved. Values are allowed to have single quotes `'` however.
+   * example attributes: allele-caller="chewbbaca";allele-caller-version="2";sequencing-platform="A fake 'SNP' platform"
 
