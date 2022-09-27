@@ -23,6 +23,7 @@ Each database is a folder with these files.
 These are reference alleles for each locus. 
 The defline must be in the format of `>locus` or `>locus_allele`.
 Locus must match the regex `/[A-Z0-9-]+/i`, i.e., only letters, numbers, and dashes.
+refs.fasta must be compatible with bioinformatics software such as `makeblastdb` and `blastn`.
 
 ## alleles.tsv
 
