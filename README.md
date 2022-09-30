@@ -1,19 +1,41 @@
 # This is a template for any new hash-based MLST database
 
+## Why?
+
+We want to have a space to share MLST alleles with mechanisms to add/remove/curate
+those alleles.
+We can admit that there is no perfect solution to this and so here are the advantages/disadvantages to our approach.
+
+### Advantages
+
+1. Contextualize genomes with what else is out there
+2. Alleles are hashed and so sequence data are not revealed
+3. Frees the database from funding sources.
+4. Git repo!
+   * ... can be copied and/or made decentralized easily.
+   * ... can be versioned
+   * ... can be forked - individuals or institutions can decide to have their own database
+   * ... can be pushed - new alleles or loci can be updated
+   * ... can be pulled - databases can update with the latest alleles or loci
+
+### Disadvantages
+
+1. Allelic sequences are lost through hashing.
+2. The database creates a limited way that the database can be queried: either the query hits against an exact hashsum or it doesn't.
+3. The database does not state whether any one allele conforms to any one rule. For example, it is unknown if a particular allele is bound by start and stop sites.
+4. There is a lot of work ahead of us.
+
+### Disadvantages
+
+
 ## Database format
 
 In the db folder, each scheme has two files.
 
 * `refs.fasta` - reference alleles for each locus
-* `alleles.tsv`
-   * tab separated values: hash of the sequence, locus name, hash-type, attributes
-      * hash-type is currently md5, indicating a base64 of md5sum.
-      * attributes are key/values separated by `=`.
-      * different attributes are separated with `;`.
-      * defined attributes are allele-caller, allele-caller-version, sequencing-platform, sequencing-platform-model, assembler, assembler-version
-      * example attributes: allele-caller=chewbbaca;allele-caller-version=2
-   * `alleles.tsv` can be chunked into files of at most 500k lines to avoid having huge files
-      * These need to be concatenated later at time of use
+* `alleles.tsv` - information on each allele
+
+The specification is at [docs/specification.md](docs/specification.md)
 
 ## Example
 
@@ -36,4 +58,5 @@ In the db folder, each scheme has two files.
 
 To add your own database, use this repo as a template and then add your database using the scripts.
 Make a new repo with it.
+Upload to a git hosting site such as github.
 
