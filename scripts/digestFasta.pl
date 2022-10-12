@@ -54,7 +54,10 @@ sub digestFasta{
   while ( ($id, $seq, undef) = readfq($seqFh, \@aux)) {
  
     my $hash = md5_base64($seq);
-    my ($locus, $allele) = split(/_/, $id);
+    # try for a right split so that only the last _ is used to split locus/allele
+    #my ($locus, $allele) = split(/_/, $id);
+    # https://stackoverflow.com/a/25173358
+    my ($locus, $allele) = split(/_([^_]+)$/, $id);
  
     # Check if this is the first allele and if so, 
     # print out the sequence to reference alleles.
