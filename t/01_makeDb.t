@@ -6,6 +6,7 @@ use Data::Dumper;
 use Test::More;
 use FindBin qw/$RealBin/;
 use File::Basename qw/basename/;
+use Digest::MD5 qw/md5_base64/;
 
 plan tests => 1;
 
@@ -34,14 +35,34 @@ subtest 'build senterica' => sub{
     thrA => 1156,
   );
   my %obsLocusCount;
+
+  # Also check to see if we see the reference allele hash
+  my %expHash = (
+    '6GUMqxkMYXpIDEPWB7GXJg' => "aroC",
+    '1AF2Py325f6H4eB9PBcP5g' => "dnaN",
+    '/kXf/b7JIRAdxKQR2OWB2A' => "hemD",
+    'n3YsJGxULFLJTFAiymIxHA' => "hisD",
+    '3+0cJja2LgafXtLwFWlSRg' => "purE",
+    'SBtkVPM/rnh1tJeMFAlOww' => "sucA",
+    '6uxkS0Eb0LOrHghvur0pyQ' => "thrA",
+  );
+  my %obsHash;
+
   open(my $allelesFh, "$outdir/alleles.tsv") or die "ERROR: cannot read $outdir/alleles.tsv: $!";
   while(<$allelesFh>){
     next if(/^#/);
     my($locus, $hash) = split(/\t/);
     $obsLocusCount{$locus}++;
+
+    # If the hash is found, set it equal to the locus
+    # to help with the exactness of the unit test.
+    if($expHash{$hash}){
+      $obsHash{$hash} = $locus;
+    }
   }
   close $allelesFh;
   is_deeply(\%obsLocusCount, \%expLocusCount, "Number of expected loci");
+  is_deeply(\%obsHash, \%expHash, "Reference allele hashes");
 
   # Check the reference sequences
   my %expRef = (

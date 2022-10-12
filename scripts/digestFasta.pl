@@ -6,9 +6,14 @@ use Data::Dumper;
 use Getopt::Long;
 use File::Basename qw/basename/;
 use Digest::MD5 qw/md5_base64/;
+use Digest::SHA qw/sha1_base64 sha256_base64/;
 
 use version 0.77;
-our $VERSION="0.2";
+our $VERSION="0.3";
+
+# Make a hashing function that is global. It will reference
+# a hashing algorithm.
+my $hash_function;
 
 local $0 = basename $0;
 sub logmsg{local $0=basename $0; print STDERR "$0: @_\n";}
@@ -16,9 +21,24 @@ exit(main());
 
 sub main{
   my $settings={};
-  GetOptions($settings,qw(help force out=s)) or die $!;
+  GetOptions($settings,qw(help hash=s force out=s)) or die $!;
   usage() if(!@ARGV || $$settings{help});
   $$settings{out} ||= die "ERROR: need an output directory with --out";
+  $$settings{hash}||= "md5";
+
+  # Decide on a hashing algorithm
+  if(lc($$settings{hash}) eq "md5"){
+    $hash_function = \&md5_base64;
+  }
+  elsif(lc($$settings{hash}) eq "sha1"){
+    $hash_function = \&sha1_base64;
+  }
+  elsif(lc($$settings{hash}) eq "sha256"){
+    $hash_function = \&sha256_base64;
+  }
+  else{
+    die "ERROR: I do not understand --hash $$settings{hash}";
+  }
 
   if(-e $$settings{out} && !$$settings{force}){
     die "ERROR: output folder already exists at $$settings{out}. --force to overwrite.";
@@ -53,7 +73,7 @@ sub digestFasta{
   my ($n, $slen, $comment, $qlen) = (0, 0, 0);
   while ( ($id, $seq, undef) = readfq($seqFh, \@aux)) {
  
-    my $hash = md5_base64($seq);
+    my $hash = &$hash_function($seq);
     # try for a right split so that only the last _ is used to split locus/allele
     #my ($locus, $allele) = split(/_/, $id);
     # https://stackoverflow.com/a/25173358
@@ -66,7 +86,7 @@ sub digestFasta{
       print $refFh ">$id\n$seq\n";
     }
     
-    my $alleleLine = join("\t", $locus, $hash, "md5");
+    my $alleleLine = join("\t", $locus, $hash, $$settings{hash});
 
     print $allelesFh "$alleleLine\n";
   }
@@ -125,6 +145,7 @@ sub usage{
   Each sequence ID must have the format locus_allele.
   Usage: $0 [options] file1.fasta...
   --out    An output folder which will contain a reference fasta file and a TSV of alleles
+  --hash   Which algorithm to use? md5 (default), sha256, sha1
   --help   This useful help menu
   \n";
   exit 0;
