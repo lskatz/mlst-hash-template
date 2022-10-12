@@ -45,8 +45,8 @@ fn write_alleles(file:&str, mut alleles_fh:&File, mut ref_fh:&File) -> (){
         }
 
         let mut line = format!("{}", [
-                &hashsum_64,
                 locus_allele[0],
+                &hashsum_64,
                 "md5"
             ].join("\t")
         );
@@ -106,7 +106,12 @@ pub fn hex_to_base64(hex: String) -> String {
             Err(e) => println!("Problem with hex: {}", e),
         };
     };
-
-    encode(&bytes) // now convert from Vec<u8> to b64-encoded String
+    let mut result = encode(&bytes); // now convert from Vec<u8> to b64-encoded String
+    
+    // remove padding chars
+    while result.chars().last().unwrap() == '=' {
+        result.pop();
+    }
+    
+    result 
 }    
-
