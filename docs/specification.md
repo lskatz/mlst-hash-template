@@ -58,6 +58,7 @@ The attributes are in the fourth column and are in the GFF attributes format.
 
 * attributes are key/values separated by `=`.
 * different attributes are separated with `;`.
+* keys and values are case insensitive.  ChewBBACA should be interpreted the same as chewbbaca.
 * defined attributes are allele-caller, allele-caller-version, sequencing-platform, sequencing-platform-model, assembler, assembler-version
 * Fields with `version` should have values in semver format, e.g., `3.0.0`.
 * Values should be quoted. Values cannot have the `"` character because it is reserved. Values are allowed to have single quotes `'` however.
@@ -75,3 +76,45 @@ The attributes are in the fourth column and are in the GFF attributes format.
 | assembler-version | Version | The version of the assembler software | 3.13 |
 | start-sequence | String | The first nucleotides of the allele, usually the start codon | ATG |
 | stop-sequence | String | The last nucleotides of the allele, usually the stop codon, in the forward direction | TGA | 
+
+### Examples for alleles.tsv
+
+#### Only required fields
+
+```text
+## hash-alleles-format v0.3
+# locus allele  hash-type
+aroC    6GUMqxkMYXpIDEPWB7GXJg  md5
+aroC    YaT2ElkUSm8IvbW6g/hxSg  md5
+aroC    PO9EWkqaMIxKj7kRtQUt5A  md5
+dnaN    1AF2Py325f6H4eB9PBcP5g  md5
+dnaN    8khwhE2lNGi1ARavWpiPnw  md5
+dnaN    D9pt/Lk/D8BOMO0ZmkGSlA  md5
+hemD    /kXf/b7JIRAdxKQR2OWB2A  md5
+hemD    Z1wFdsONZPsiBY0We8badg  md5
+hemD    Xqa0fIqryOcOG390D1HfNQ  md5
+hisD    n3YsJGxULFLJTFAiymIxHA  md5
+hisD    PDnj+IrIcQ0hqksnlaInLA  md5
+hisD    rJG6kUykD7QR+6kVB+3uag  md5
+purE    3+0cJja2LgafXtLwFWlSRg  md5
+purE    /58bj78QhjGigSl9bPtV/A  md5
+purE    8iP6DvzzYcjFiBOmOVWydg  md5
+sucA    SBtkVPM/rnh1tJeMFAlOww  md5
+sucA    PcnmEBZq9wOow/WyVMFHZg  md5
+sucA    VLbw66gQl3nDdppBRX5R/Q  md5
+thrA    6uxkS0Eb0LOrHghvur0pyQ  md5
+thrA    3Iobq+fag08oHdKCJ9b5tQ  md5
+thrA    dhqKwb2BFpPAvDaWt3+9yA  md5
+```
+
+#### With attributes field
+
+The third entry has no attributes field, to help illustrate that alleles with and without an attribute field can be in the same file.
+
+```text
+## hash-alleles-format v0.3
+# locus allele  hash-type
+aroC    6GUMqxkMYXpIDEPWB7GXJg  md5  allele-caller="chewbbaca";allele-caller-version="2";sequencing-platform="Illumina";sequencing-platform-model="MiSeq";start-sequence="GTT";stop-sequence="GGT"
+aroC    YaT2ElkUSm8IvbW6g/hxSg  md5  allele-caller="stringmlst";allele-caller-version="0.6.3";sequencing-platform="Illumina";sequencing-platform-model="NovaSeq"
+aroC    PO9EWkqaMIxKj7kRtQUt5A  md5  
+```
