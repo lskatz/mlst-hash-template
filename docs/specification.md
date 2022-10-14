@@ -47,14 +47,31 @@ In a database folder, alleles.tsv can be seprated to multiple files with letters
 
 The fields:
 
-* Locus: the locus name. Must match the regex `/[A-Z0-9-]+/i`.
+* Locus: the locus name. Must match the regex `/[A-Z0-9_-]+/i`.
 * Allele: the hashsum of the sequence in base64.
 * hash-type: the algorithm that hashed the sequence. It should be in base64 format. There is only one valid value at this time `md5`. This field is case insensitive.
 * attributes: optional fields in GFF attributes format.
-   * attributes are key/values separated by `=`.
-   * different attributes are separated with `;`.
-   * defined attributes are allele-caller, allele-caller-version, sequencing-platform, sequencing-platform-model, assembler, assembler-version
-   * Fields with `version` should have values in semver format, e.g., `3.0.0`.
-   * Values should be quoted. Values cannot have the `"` character because it is reserved. Values are allowed to have single quotes `'` however.
-   * example attributes: allele-caller="chewbbaca";allele-caller-version="2";sequencing-platform="A fake 'SNP' platform"
 
+### Attributes field
+
+The attributes are in the fourth column and are in the GFF attributes format.
+
+* attributes are key/values separated by `=`.
+* different attributes are separated with `;`.
+* defined attributes are allele-caller, allele-caller-version, sequencing-platform, sequencing-platform-model, assembler, assembler-version
+* Fields with `version` should have values in semver format, e.g., `3.0.0`.
+* Values should be quoted. Values cannot have the `"` character because it is reserved. Values are allowed to have single quotes `'` however.
+* example attributes: allele-caller="chewbbaca";allele-caller-version="2";sequencing-platform="A fake 'SNP' platform"
+
+**Defined attributes**
+
+| Attribute | Data type | Description | Example |
+|-----------|-----------|-------------|---------|
+| allele-caller | String | The software used to call the allele | ChewBBACA |
+| allele-caller-version | Version | The version of the allele-caller | 2.1.0 |
+| sequencing-platform | String | The sequencing platform used to sequence the this allele | Illumina |
+| sequencing-platform-model | String | The model name of the sequencing platform | MiSeq |
+| assembler | String | The software used to assemble the raw reads from the sequencer | SPAdes |
+| assembler-version | Version | The version of the assembler software | 3.13 |
+| start-sequence | String | The first nucleotides of the allele, usually the start codon | ATG |
+| stop-sequence | String | The last nucleotides of the allele, usually the stop codon, in the forward direction | TGA | 
