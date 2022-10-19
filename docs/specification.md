@@ -24,6 +24,7 @@ These are reference alleles for each locus.
 The defline must be in the format of `>locus` or `>locus_allele`.
 Locus must match the regex `/[A-Z0-9-]+/i`, i.e., only letters, numbers, and dashes.
 refs.fasta must be compatible with bioinformatics software such as `makeblastdb` and `blastn`.
+This file would normally have one allele per locus but it can have more than one allele per locus.
 
 ## alleles.tsv
 
