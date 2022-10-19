@@ -77,6 +77,7 @@ The attributes are in the fourth column and are in the GFF attributes format.
 | assembler-version | Version | The version of the assembler software | 3.13 |
 | start-sequence | String | The first nucleotides of the allele, usually the start codon | ATG |
 | stop-sequence | String | The last nucleotides of the allele, usually the stop codon, in the forward direction | TGA | 
+| length | Integer | The number of nucleotides in the allele | 947 |
 
 ### Examples for alleles.tsv
 
