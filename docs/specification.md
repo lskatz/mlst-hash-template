@@ -71,13 +71,17 @@ The attributes are in the fourth column and are in the GFF attributes format.
 |-----------|-----------|-------------|---------|
 | allele-caller | String | The software used to call the allele | ChewBBACA |
 | allele-caller-version | Version | The version of the allele-caller | 2.1.0 |
+| allele-caller-options | String | Any non-default options used in the allele caller | --size-threshold 0.3 |
 | sequencing-platform | String | The sequencing platform used to sequence the this allele | Illumina |
 | sequencing-platform-model | String | The model name of the sequencing platform | MiSeq |
 | assembler | String | The software used to assemble the raw reads from the sequencer | SPAdes |
 | assembler-version | Version | The version of the assembler software | 3.13 |
+| assembler-options | String | Any non-default options used in the assembler | --careful |
 | start-sequence | String | The first nucleotides of the allele, usually the start codon | ATG |
 | stop-sequence | String | The last nucleotides of the allele, usually the stop codon, in the forward direction | TGA | 
 | length | Integer | The number of nucleotides in the allele | 947 |
+| CIGAR | String | A CIGAR string describing the match to the reference sequence. Specification for the CIGAR string is described in the SAM specification. This field requires another field `ref`. | 30M5I30M |
+| ref | String | The identifier of the reference allele that this allele was compared against. Do not include extra information after the whitespace in an identifier, if it exists. The allele must exist in `refs.fasta`. | aroC_1 |
 
 ### Examples for alleles.tsv
 
