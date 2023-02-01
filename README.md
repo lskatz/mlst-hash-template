@@ -25,9 +25,6 @@ We can admit that there is no perfect solution to this and so here are the advan
 3. The database does not state whether any one allele conforms to any one rule. For example, it is unknown if a particular allele is bound by start and stop sites.
 4. There is a lot of work ahead of us.
 
-### Disadvantages
-
-
 ## Database format
 
 In the db folder, each scheme has two files.
