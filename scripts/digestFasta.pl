@@ -36,6 +36,9 @@ sub main{
   elsif(lc($$settings{hash}) eq "sha256"){
     $hash_function = \&sha256_base64;
   }
+  elsif(lc($$settings{hash}) eq "plaintext"){
+    $hash_function = \&uc;
+  }
   else{
     die "ERROR: I do not understand --hash $$settings{hash}";
   }
@@ -139,13 +142,17 @@ sub readfq {
     return ($name, $seq, $comm);
 }
 
+sub uc{
+  return(uc($_[0]));
+}
+
 sub usage{
   print "$0: reads fasta file(s) and creates a database in the hashsum format
   The fasta file(s) must be one locus per line. The first allele is the assumed reference.
   Each sequence ID must have the format locus_allele.
   Usage: $0 [options] file1.fasta...
   --out    An output folder which will contain a reference fasta file and a TSV of alleles
-  --hash   Which algorithm to use? md5 (default), sha256, sha1
+  --hash   Which algorithm to use? md5 (default), sha256, sha1, plaintext
   --help   This useful help menu
   \n";
   exit 0;
