@@ -64,6 +64,7 @@ The md5sum of this string is `689ec302e620f47a02daa4c38168b852` and therefore th
 | scheme| 1                       | The MLST scheme | `Salmonella_enterica_cgMLST` |
 | ST    | 2                       | The sequence type | `689ec302e620f47a02daa4c38168b852` |
 | hash-type | 3                   | The hashsum algorithm used to define the ST | `md5` |
+| locus-name1 | subsequent column | There are unlimited columns starting here, describing each locus and its allele, one at a time. | an allele hashsum |
 
 ## alleles.tsv
 
