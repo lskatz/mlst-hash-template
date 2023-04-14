@@ -50,10 +50,9 @@ The alleles shown are truncated for simplicity.
 | AB   | 2F   | A2     | 22   | a4     |
 
 Loci are sorted alphabetically like so: barK, fooB, helloW, locusC, xyzB.
+Before concatenating into a string, the `helloW` value must be capitalized into `A4`.
 Therefore, the alleles, concatenated with tabs would like like this:  
 `22	2F	A4	A4	A2	AB`
-
-Notice that the `helloW` allele hash been capitalized before hashsumming the whole string.
 
 The md5sum of this string is `689ec302e620f47a02daa4c38168b852` and therefore this is the sequence type of this example profile.
 
