@@ -17,6 +17,7 @@ Each database is a folder with these files.
 
 * refs.fasta
 * profiles.tsv
+* clusters.tsv
 * alleles.tsv
 
 ## refs.fasta
@@ -56,7 +57,16 @@ Therefore, the alleles, concatenated with tabs would like like this:
 
 The md5sum of this string is `689ec302e620f47a02daa4c38168b852` and therefore this is the sequence type of this example profile.
 
+### Special alleles in profiles.tsv
+
+* `.` indicates that the allele is the same as the reference allele in the database.
+This is the single allele shown in `refs.fasta` for this locus.
+This is an invalid allele if there are multiple alleles in `refs.fasta` for this locus.
+* `-` indicates that there is no allele call for this locus.
+
 ### Defined columns in profiles.tsv
+
+Columns can be in any order and so the `column number` is just a suggestion.
 
 | Label | column number (1-based) | definition | example |
 | ----- | ----------------------- | ---------- | ------- |
@@ -64,6 +74,21 @@ The md5sum of this string is `689ec302e620f47a02daa4c38168b852` and therefore th
 | ST    | 2                       | The sequence type | `689ec302e620f47a02daa4c38168b852` |
 | hash-type | 3                   | The hashsum algorithm used to define the ST | `md5` |
 | locus-name1 | subsequent column | There are unlimited columns starting here, describing each locus and its allele, one at a time. | an allele hashsum |
+
+## clusters.tsv
+
+This file has a similar purpose to `profiles.tsv` but in a more elegant way.
+This is if you have something like allele codes or SNP codes in your system.
+
+### Defined columns in clusters.tsv
+
+Columns can be in any order and so the `column number` is just a suggestion.
+
+| Label | column number (1-based) | definition | example(s) |
+| ----- | ----------------------- | ---------- | ------- |
+| sample| 1 | The name of your strain, sample, or genome | `LT2` |
+| clusterScheme | 2 | The name of the scheme for clustering | `alleleCode`, `MLST` for classic MLST, `wgMLST` for whole genome MLST` |
+| clusterName | 3 | The cluster group | The value of the cluster group in this cluster scheme | `10.1.3.6.2` (allele code), CC11 (clonal complex for classic MLST) |
 
 ## alleles.tsv
 
