@@ -129,7 +129,7 @@ The attributes are in the fourth column and are in the GFF attributes format.
 * Values should be quoted. Values cannot have the `"` character because it is reserved. Values are allowed to have single quotes `'` however.
 * example attributes: allele-caller="chewbbaca";allele-caller-version="2";sequencing-platform="A fake 'SNP' platform"
 
-**Defined attributes**
+#### Defined attributes for alleles.tsv
 
 | Attribute | Data type | Description | Example |
 |-----------|-----------|-------------|---------|
