@@ -87,8 +87,8 @@ Columns can be in any order and so the `column number` is just a suggestion.
 | Label | column number (1-based) | definition | example(s) |
 | ----- | ----------------------- | ---------- | ------- |
 | sample| 1 | The name of your strain, sample, or genome | `LT2` |
-| clusterScheme | 2 | The name of the scheme for clustering | `alleleCode`, `MLST` for classic MLST, `wgMLST` for whole genome MLST` |
-| clusterName | 3 | The cluster group | The value of the cluster group in this cluster scheme | `10.1.3.6.2` (allele code), CC11 (clonal complex for classic MLST) |
+| clusterScheme | 2 | The name of the scheme for clustering | `alleleCode` |
+| clusterName | 3 | The cluster group | The value of the cluster group in this cluster scheme | `10.1.3.6.2` (allele code) |
 
 ## alleles.tsv
 
