@@ -16,6 +16,7 @@ The basic structure is that the folder name is the name of the database.
 Each database is a folder with these files.
 
 * refs.fasta
+* profiles.tsv
 * alleles.tsv
 
 ## refs.fasta
@@ -25,6 +26,44 @@ The defline must be in the format of `>locus` or `>locus_allele`.
 Locus must match the regex `/[A-Z0-9-]+/i`, i.e., only letters, numbers, and dashes.
 refs.fasta must be compatible with bioinformatics software such as `makeblastdb` and `blastn`.
 This file would normally have one allele per locus but it can have more than one allele per locus.
+
+## profiles.tsv
+
+This is a listing of every MLST profile.
+Whitespace is not allowed in the values. Values are separated by tabs.
+The first line is a header.
+The first column is the MLST scheme and its header is `scheme`.
+The second column is sequence type and its header is `ST`.
+The subsequent columns are names of loci which must be identical to those found in `alleles.tsv`.
+
+_Note_: typically, sequence types are integers.
+However, since this is a decentralized specification reliant on hashsums instead of integers defined from a central location, the sequence type is a hashsum too.
+It is calculated by concatenating the alleles in the profile, in order of alphabet-sorted loci, separated by tabs.
+If the hashsum result is case-insensitive (it usually is), then the values should be uppercase.
+Therefore, there is a third required column hash-type.
+
+An example calculation of a sequence type is with these five loci and their alleles.
+The alleles shown are truncated for simplicity.
+
+| xyzB | fooB | locusC | barK | helloW |
+| ---- | ---- | ------ | ---- | ------ |
+| AB   | 2F   | A2     | 22   | a4     |
+
+Loci are sorted alphabetically like so: barK, fooB, helloW, locusC, xyzB.
+Therefore, the alleles, concatenated with tabs would like like this:  
+`22	2F	A4	A4	A2	AB`
+
+Notice that the `helloW` allele hash been capitalized before hashsumming the whole string.
+
+The md5sum of this string is `689ec302e620f47a02daa4c38168b852` and therefore this is the sequence type of this example profile.
+
+### Defined columns in profiles.tsv
+
+| Label | column number (1-based) | definition | example |
+| ----- | ----------------------- | ---------- | ------- |
+| scheme| 1                       | The MLST scheme | `Salmonella_enterica_cgMLST` |
+| ST    | 2                       | The sequence type | `689ec302e620f47a02daa4c38168b852` |
+| hash-type | 3                   | The hashsum algorithm used to define the ST | `md5` |
 
 ## alleles.tsv
 
