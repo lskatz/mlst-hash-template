@@ -62,6 +62,8 @@ On the command line, hashsumming looks like this:
 
 The md5sum of this string is `hGPy1TKezj177pTM29V7lA==` and therefore this is the sequence type of this example profile.
 
+See the [hashing appendix](#Accepted-hashing-methods) for more information.
+
 ### Special alleles in profiles.tsv
 
 * `.` indicates that the allele is the same as the reference allele in the database.
