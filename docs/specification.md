@@ -1,3 +1,5 @@
+version 0.4
+
 # File format specification for the hash allele database
 
 The hash allele database format describes an MLST database where each locus
@@ -192,3 +194,26 @@ aroC    6GUMqxkMYXpIDEPWB7GXJg  md5  allele-caller="chewbbaca";allele-caller-ver
 aroC    YaT2ElkUSm8IvbW6g/hxSg  md5  allele-caller="stringmlst";allele-caller-version="0.6.3";sequencing-platform="Illumina";sequencing-platform-model="NovaSeq"
 aroC    PO9EWkqaMIxKj7kRtQUt5A  md5  
 ```
+# Appendix
+
+## Accepted hashing methods
+
+Hashing methods must output base-64 instead of their normal hexadecimal output.
+One way to do this is with `openssl` like so
+
+    echo -ne $'22\t2F\ta4\tA2\tAB' | \
+      openssl dgst -md5 -binary | \
+      openssl enc -base64
+
+Where the first line is the echo statement with `-e` for "evaluate" the `$''` syntax with `\t` characters
+and `-n` is for no newline. A newline character would change the output hash.
+`openssl` has a `dgst` subcommand which outputs the `md5`.
+This is converted to base64 with the next `openssl` command with subcommand `enc`.
+
+| name | note |
+| ---- | ---- |
+| crc32| Known to cause collisions. See: <https://github.com/lskatz/mlst-hash-template/issues/11>, <https://github.com/lskatz/mlst-hash-template/issues/13>, and <https://github.com/lskatz/mlst-hash-template/issues/16>. |
+| md5  | |
+| sha1 | |
+| sha256 | |
+
