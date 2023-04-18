@@ -40,7 +40,7 @@ The subsequent columns are names of loci which must be identical to those found 
 _Note_: typically, sequence types are integers.
 However, since this is a decentralized specification reliant on hashsums instead of integers defined from a central location, the sequence type is a hashsum too.
 It is calculated by concatenating the alleles in the profile, in order of alphabet-sorted loci, separated by tabs.
-If the hashsum result is case-insensitive (it usually is), then the values should be uppercase.
+If the hashsum result is case-insensitive, then the values should be uppercase.
 Therefore, there is a third required column hash-type.
 
 An example calculation of a sequence type is with these five loci and their alleles.
@@ -51,11 +51,14 @@ The alleles shown are truncated for simplicity.
 | AB   | 2F   | A2     | 22   | a4     |
 
 Loci are sorted alphabetically like so: barK, fooB, helloW, locusC, xyzB.
-Before concatenating into a string, the `helloW` value must be capitalized into `A4`.
 Therefore, the alleles, concatenated with tabs would like like this:  
-`22	2F	A4	A4	A2	AB`
+`22	2F	a4	A2	AB`
 
-The md5sum of this string is `689ec302e620f47a02daa4c38168b852` and therefore this is the sequence type of this example profile.
+On the command line, hashsumming looks like this:
+
+    echo -ne $'22\t2F\ta4\tA2\tAB' | openssl dgst -md5 -binary | openssl enc -base64
+
+The md5sum of this string is `hGPy1TKezj177pTM29V7lA==` and therefore this is the sequence type of this example profile.
 
 ### Special alleles in profiles.tsv
 
