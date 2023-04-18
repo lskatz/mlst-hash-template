@@ -122,6 +122,7 @@ The fields:
 * Locus: the locus name. Must match the regex `/[A-Z0-9_-]+/i`.
 * Allele: the hashsum of the sequence in base64.
 * hash-type: the algorithm that hashed the sequence. It should be in base64 format. There is only one valid value at this time `md5`. This field is case insensitive.
+See the [hashing appendix](#Accepted-hashing-methods) for more information.
 * attributes: optional fields in GFF attributes format.
 
 ### Attributes field
