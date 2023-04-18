@@ -53,6 +53,7 @@ sub main{
   open(my $allelesFh, ">", "$$settings{out}/alleles.tsv") or die "ERROR: could not write to $$settings{out}/alleles.tsv";
 
   # allele calling, sequencing tech, assembler
+  print $allelesFh "## hash-alleles-format v0.4\n";
   print $allelesFh join("\t", "# locus","allele","hash-type") ."\n";
   for my $f(@ARGV){
     logmsg "Processing $f";
