@@ -55,13 +55,34 @@ sub main{
   # allele calling, sequencing tech, assembler
   print $allelesFh "## hash-alleles-format v0.4\n";
   print $allelesFh join("\t", "# locus","allele","hash-type") ."\n";
+  my %locus;
   for my $f(@ARGV){
     logmsg "Processing $f";
-    digestFasta($f, $refFh, $allelesFh, $settings);
+    my $locusList = digestFasta($f, $refFh, $allelesFh, $settings);
+
+    for my $l(@$locusList){
+      $locus{$l} = 1;
+    }
   }
 
   close $allelesFh;
   close $refFh;
+
+  # sort/uniq loci
+  my @locus = sort{$a cmp $b} keys(%locus);
+
+  # Make empty profiles.tsv
+  open(my $profilesFh, ">", "$$settings{out}/profiles.tsv") or die "ERROR: could not write to $$settings{out}/profiles.tsv: $!";
+  print $profilesFh join("\t", qw(scheme ST hash-type), @locus);
+  print $profilesFh "\n";
+  close $profilesFh;
+
+  # make empty clusters.tsv
+  open(my $clustersFh, ">", "$$settings{out}/clusters.tsv") or die "ERROR: could not write to $$settings{out}/clusters.tsv: $!";
+  print $clustersFh join("\t", qw(sample clusterScheme clusterName));
+  print $clustersFh "\n";
+  close $clustersFh;
+
 
   return 0;
 }
@@ -69,6 +90,7 @@ sub main{
 sub digestFasta{
   my($f, $refFh, $allelesFh, $settings) = @_;
   
+  my @locus;
 
   my $numSeqs = 0;
   open(my $seqFh, "<", "$f") or die "ERROR: could not open $f for reading";
@@ -82,6 +104,7 @@ sub digestFasta{
     #my ($locus, $allele) = split(/_/, $id);
     # https://stackoverflow.com/a/25173358
     my ($locus, $allele) = split(/_([^_]+)$/, $id);
+    push(@locus, $locus);
  
     # Check if this is the first allele and if so, 
     # print out the sequence to reference alleles.
@@ -95,7 +118,7 @@ sub digestFasta{
     print $allelesFh "$alleleLine\n";
   }
 
-  return $numSeqs;
+  return \@locus;
 }
 
 # Read fq subroutine from Andrea which was inspired by lh3
