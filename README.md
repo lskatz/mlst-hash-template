@@ -28,10 +28,12 @@ We can admit that there is no perfect solution to this and so here are the advan
 
 ## Database format
 
-In the db folder, each scheme has two files.
+In the db folder, each scheme has these files.
 
 * `refs.fasta` - reference alleles for each locus
 * `alleles.tsv` - information on each allele
+* `clusters.tsv` - information on clusters. Clusters could be outbreak codes. Or, they could be something else like allele codes.
+* `profiles.tsv` - each sample and its alleles
 
 The specification is at [docs/specification.md](docs/specification.md)
 
