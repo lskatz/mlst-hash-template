@@ -217,4 +217,6 @@ This is converted to base64 with the next `openssl` command with subcommand `enc
 | md5  | |
 | sha1 | |
 | sha256 | |
+| plaintext | No hashing; actual nucleic acid sequence |
+| plaintext-protein | No hashing; actual amino acid sequence. Not supported in the executables as of version 0.4 |
 
