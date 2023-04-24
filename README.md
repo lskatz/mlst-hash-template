@@ -10,8 +10,9 @@ We can admit that there is no perfect solution to this and so here are the advan
 
 1. Contextualize genomes with what else is out there
 2. Alleles are hashed and so sequence data are not revealed
-3. Frees the database from funding sources.
-4. Git repo!
+3. The hash is a fixed length, and so it is an easy check to see if an allele has been truncated.
+4. Frees the database from funding sources.
+5. Git repo!
    * ... can be copied and/or made decentralized easily.
    * ... can be versioned
    * ... can be forked - individuals or institutions can decide to have their own database
@@ -27,10 +28,12 @@ We can admit that there is no perfect solution to this and so here are the advan
 
 ## Database format
 
-In the db folder, each scheme has two files.
+In the db folder, each scheme has these files.
 
 * `refs.fasta` - reference alleles for each locus
 * `alleles.tsv` - information on each allele
+* `clusters.tsv` - information on clusters. Clusters could be outbreak codes. Or, they could be something else like allele codes.
+* `profiles.tsv` - each sample and its alleles
 
 The specification is at [docs/specification.md](docs/specification.md)
 

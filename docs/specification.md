@@ -16,6 +16,8 @@ The basic structure is that the folder name is the name of the database.
 Each database is a folder with these files.
 
 * refs.fasta
+* profiles.tsv
+* clusters.tsv
 * alleles.tsv
 
 ## refs.fasta
@@ -25,6 +27,73 @@ The defline must be in the format of `>locus` or `>locus_allele`.
 Locus must match the regex `/[A-Z0-9-]+/i`, i.e., only letters, numbers, and dashes.
 refs.fasta must be compatible with bioinformatics software such as `makeblastdb` and `blastn`.
 This file would normally have one allele per locus but it can have more than one allele per locus.
+
+## profiles.tsv
+
+This is a listing of every MLST profile.
+Whitespace is not allowed in the values. Values are separated by tabs.
+The first line is a header.
+The first column is the MLST scheme and its header is `scheme`.
+The second column is sequence type and its header is `ST`.
+The subsequent columns are names of loci which must be identical to those found in `alleles.tsv`.
+
+_Note_: typically, sequence types are integers.
+However, since this is a decentralized specification reliant on hashsums instead of integers defined from a central location, the sequence type is a hashsum too.
+It is calculated by concatenating the alleles in the profile, in order of alphabet-sorted loci, separated by tabs.
+If the hashsum result is case-insensitive, then the values should be uppercase.
+Therefore, there is a third required column hash-type.
+
+An example calculation of a sequence type is with these five loci and their alleles.
+The alleles shown are truncated for simplicity.
+
+| xyzB | fooB | locusC | barK | helloW |
+| ---- | ---- | ------ | ---- | ------ |
+| AB   | 2F   | A2     | 22   | a4     |
+
+Loci are sorted alphabetically like so: barK, fooB, helloW, locusC, xyzB.
+Therefore, the alleles, concatenated with tabs would like like this:  
+`22	2F	a4	A2	AB`
+
+On the command line, hashsumming looks like this:
+
+    echo -ne $'22\t2F\ta4\tA2\tAB' | openssl dgst -md5 -binary | openssl enc -base64
+
+The md5sum of this string is `hGPy1TKezj177pTM29V7lA==` and therefore this is the sequence type of this example profile.
+
+See the [hashing appendix](#Accepted-hashing-methods) for more information.
+
+### Special alleles in profiles.tsv
+
+* `.` indicates that the allele is the same as the reference allele in the database.
+This is the single allele shown in `refs.fasta` for this locus.
+This is an invalid allele if there are multiple alleles in `refs.fasta` for this locus.
+* `-` indicates that there is no allele call for this locus.
+
+### Defined columns in profiles.tsv
+
+Columns can be in any order and so the `column number` is just a suggestion.
+
+| Label | column number (1-based) | definition | example |
+| ----- | ----------------------- | ---------- | ------- |
+| scheme| 1                       | The MLST scheme | `Salmonella_enterica_cgMLST` |
+| ST    | 2                       | The sequence type | `689ec302e620f47a02daa4c38168b852` |
+| hash-type | 3                   | The hashsum algorithm used to define the ST | `md5` |
+| locus-name1 | subsequent column | There are unlimited columns starting here, describing each locus and its allele, one at a time. | an allele hashsum |
+
+## clusters.tsv
+
+This file has a similar purpose to `profiles.tsv` but in a more elegant way.
+This is if you have something like allele codes or SNP codes in your system.
+
+### Defined columns in clusters.tsv
+
+Columns can be in any order and so the `column number` is just a suggestion.
+
+| Label | column number (1-based) | definition | example(s) |
+| ----- | ----------------------- | ---------- | ------- |
+| sample| 1 | The name of your strain, sample, or genome | `LT2` |
+| clusterScheme | 2 | The name of the scheme for clustering | `alleleCode` |
+| clusterName | 3 | The cluster group | The value of the cluster group in this cluster scheme | `10.1.3.6.2` (allele code) |
 
 ## alleles.tsv
 
@@ -51,6 +120,7 @@ The fields:
 * Locus: the locus name. Must match the regex `/[A-Z0-9_-]+/i`.
 * Allele: the hashsum of the sequence in base64.
 * hash-type: the algorithm that hashed the sequence. It should be in base64 format. There is only one valid value at this time `md5`. This field is case insensitive.
+See the [hashing appendix](#Accepted-hashing-methods) for more information.
 * attributes: optional fields in GFF attributes format.
 
 ### Attributes field
@@ -65,7 +135,7 @@ The attributes are in the fourth column and are in the GFF attributes format.
 * Values should be quoted. Values cannot have the `"` character because it is reserved. Values are allowed to have single quotes `'` however.
 * example attributes: allele-caller="chewbbaca";allele-caller-version="2";sequencing-platform="A fake 'SNP' platform"
 
-**Defined attributes**
+#### Defined attributes for alleles.tsv
 
 | Attribute | Data type | Description | Example |
 |-----------|-----------|-------------|---------|
@@ -80,8 +150,8 @@ The attributes are in the fourth column and are in the GFF attributes format.
 | start-sequence | String | The first nucleotides of the allele, usually the start codon | ATG |
 | stop-sequence | String | The last nucleotides of the allele, usually the stop codon, in the forward direction | TGA | 
 | length | Integer | The number of nucleotides in the allele | 947 |
-| CIGAR _experimental_ | String | A CIGAR string describing the match to the reference sequence. Specification for the CIGAR string is described in the SAM specification. This field requires another field `ref`. | 30M5I30M |
-| SNP _experimental_ | String | A SNP notation describing what was the reference nucleotide and what is the new nucleotide. The format is concatenated and has three fields: reference base(s), position, allele base(s). Coordinates are 1-based. Can describe indels too. Multiple SNP values can be separated by semicolons. This field requires another field `ref`. | SNP in the 5th position, insertion in the 10th position from A to two Gs, and deletion of ATG in the 30th position: `A5G;A10GG;ATG30` |
+| CIGAR _experimental_ | String | A CIGAR string describing the match to the reference sequence. Specification for the CIGAR string is described in the SAM specification. This field requires another field `ref`. `M` is discouraged, as it does not distinguish between a match and a mismatch. Instead, use `Y` for match and `X` for mismatch. Normally, a CIGAR has `=` for a match, but unfortunately this is a reserved character already in the attributes field. Assumes the reference is the single reference sequence in the database for this locus. If multiple references exist for this locus, then `ref` is required. | 30Y5I30Y |
+| SNP _experimental_ | String | A SNP notation describing what was the reference nucleotide and what is the new nucleotide. The format is concatenated and has three fields: reference base(s), position, allele base(s). Coordinates are 1-based. Can describe indels too. Multiple SNP values can be separated by semicolons. This field is available but discouraged if you can use CIGAR instead. Assumes the reference is the single reference sequence in the database for this locus. If multiple references exist for this locus, then `ref` is required. | SNP in the 5th position, insertion in the 10th position from A to two Gs, and deletion of ATG in the 30th position: `A5G;A10GG;ATG30` |
 | ref | String | The identifier of the reference allele that this allele was compared against. Do not include extra information after the whitespace in an identifier, if it exists. The allele must exist in `refs.fasta`. | aroC_1 |
 
 ### Examples for alleles.tsv
@@ -125,3 +195,26 @@ aroC    6GUMqxkMYXpIDEPWB7GXJg  md5  allele-caller="chewbbaca";allele-caller-ver
 aroC    YaT2ElkUSm8IvbW6g/hxSg  md5  allele-caller="stringmlst";allele-caller-version="0.6.3";sequencing-platform="Illumina";sequencing-platform-model="NovaSeq"
 aroC    PO9EWkqaMIxKj7kRtQUt5A  md5  
 ```
+# Appendix
+
+## Accepted hashing methods
+
+Hashing methods must output base-64 instead of their normal hexadecimal output.
+One way to do this is with `openssl` like so
+
+    echo -ne $'22\t2F\ta4\tA2\tAB' | \
+      openssl dgst -md5 -binary | \
+      openssl enc -base64
+
+Where the first line is the echo statement with `-e` for "evaluate" the `$''` syntax with `\t` characters
+and `-n` is for no newline. A newline character would change the output hash.
+`openssl` has a `dgst` subcommand which outputs the `md5`.
+This is converted to base64 with the next `openssl` command with subcommand `enc`.
+
+| name | note |
+| ---- | ---- |
+| crc32| Known to cause collisions. See: <https://github.com/lskatz/mlst-hash-template/issues/11>, <https://github.com/lskatz/mlst-hash-template/issues/13>, and <https://github.com/lskatz/mlst-hash-template/issues/16>. |
+| md5  | |
+| sha1 | |
+| sha256 | |
+
