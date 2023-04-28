@@ -40,10 +40,12 @@ exit(main());
 
 sub main{
   my $settings={};
-  GetOptions($settings,qw(help force tempdir=s out=s)) or die $!;
+  GetOptions($settings,qw(help force tempdir=s scheme=s db-dir=s out=s)) or die $!;
   usage() if(!@ARGV || $$settings{help});
   $$settings{tempdir} ||= tempdir("$0.XXXXXX", CLEANUP=>1, TMPDIR=>1);
   $$settings{out} ||= die "ERROR: need an output directory with --out";
+  $$settings{scheme} ||= die "ERROR: need the name of a scheme with --scheme";
+  $$settings{'db-dir'}||= die "ERROR: need the directory of the MLST database scheme with --db-dir";
 
   if(-e $$settings{out} && !$$settings{force}){
     die "ERROR: output folder already exists at $$settings{out}. --force to overwrite.";
@@ -52,19 +54,19 @@ sub main{
   mkdir $$settings{tempdir} if(!-e $$settings{tempdir});
 
   for my $f(@ARGV){
-    readEtokiFasta($f, $$settings{out}, $settings);
+    logmsg "Reading $f";
+    my $alleles = readEtokiFasta($f, $settings);
+    logmsg "Writing results from $f to $$settings{out}";
+    writeEtokiToHashDb($alleles, $$settings{out}, $$settings{'db-dir'}, $settings);
   }
 
   return 0;
 }
 
 sub readEtokiFasta{
-  my($fasta, $outdir, $settings) = @_;
+  my($fasta, $settings) = @_;
 
-  my $allelesFile = "$outdir/alleles.new.tsv";
-  open(my $allelesFh, ">", $allelesFile) or die "ERROR: could not write to $allelesFile: $!";
-  print $allelesFh "## hash-alleles-format v0.4\n";
-  print $allelesFh "# ".join("\t", qw(locus allele hash-type attributes))."\n";
+  my @allele;
 
   my $numSeqs = 0;
   open(my $seqFh, "<", "$fasta") or die "ERROR: could not open $fasta for reading";
@@ -73,14 +75,45 @@ sub readEtokiFasta{
   my ($n, $slen, $comment, $qlen) = (0, 0, 0);
   while ( ($id, $seq, $comment) = readfq($seqFh, \@aux)) {
 
-    my $hash = md5_base64($seq);
-
     my %property;
     my @kvPair = split(/\s+/, $comment);
     for my $kv(@kvPair){
       my($key, $value) = split(/=/, $kv);
       $property{$key} = $value;
     }
+
+    push(@allele, {
+        properties => \%property,
+        locus      => $id,
+        seq        => $seq,
+    });
+
+  }
+  close $seqFh;
+
+  return \@allele;
+
+}
+
+# Use the properties of the alleles from Etoki to generate new HashDB files
+sub writeEtokiToHashDb{
+  my($alleles, $outdir, $dbDir, $settings) = @_;
+
+  my %profile;
+
+  my $allelesFile = "$outdir/alleles.new.tsv";
+  open(my $allelesFh, ">>", $allelesFile) or die "ERROR: could not append to $allelesFile: $!";
+  print $allelesFh "## hash-alleles-format v0.5\n";
+  print $allelesFh "# ".join("\t", qw(locus allele hash-type attributes))."\n";
+
+  for my $allele(@$alleles){
+
+    # Extract some properties to make this block readable
+    my %property = %{ $$allele{properties} };
+    my $seq = $$allele{seq};
+    my $locus = $$allele{locus};
+
+    my $hash = md5_base64($seq);
 
     if($property{accepted} == GOOD || $property{accepted} == GOOD_NO_QUAL){
       my $attributes = "allele-caller=EToKi";
@@ -92,17 +125,32 @@ sub readEtokiFasta{
       #$attributes.=";ref=$property{reference}";
       #$attributes.=";CIGAR=$property{CIGAR}";
       print $allelesFh join("\t",
-        $id,
+        $locus,
         $hash,
         "md5",
         $attributes,
       ) . "\n";
+
+      $profile{$locus} = $hash;
     }
   }
-  close $seqFh;
-
   close $allelesFh;
 
+  my @sortedLoci = sort{$a cmp $b} keys(%profile);
+
+  my $allelesStr = "";
+  for my $locus(@sortedLoci){
+    $allelesStr .= "$profile{$locus}\t";
+  }
+  $allelesStr =~ s/\s+$//; # remove trailing tab
+  my $ST = md5_base64($allelesStr);
+
+  open(my $profileFh, ">>", "$outdir/profiles.tsv") or die "ERROR: could not append to $outdir/profiles.tsv: $!";
+  print $profileFh "# ".join("\t", qw(scheme ST hash-type), @sortedLoci)."\n";
+  print $profileFh join("\t",
+    $$settings{scheme}, $ST, "md5", $allelesStr
+  );
+  close $profileFh;
 }
 
 # Read fq subroutine from Andrea which was inspired by lh3
@@ -154,6 +202,8 @@ sub usage{
   print "$0: Read EToKi MLST results in fasta format and turn them into new alleles for the MLST hash spec database
   Usage: $0 [options] file1.fasta...
   --out    An output folder for alleles.tsv and any other files
+  --scheme The name of the scheme, e.g., Salmonella_enterica_cgMLST
+  --db-dir The directory of the MLST hash database
   --force  Override the output folder in --out
   --help   This useful help menu
   \n";

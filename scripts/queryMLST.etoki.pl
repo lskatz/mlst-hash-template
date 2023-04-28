@@ -28,6 +28,9 @@ sub main{
   if(-e $$settings{out} && !$$settings{force}){
     die "ERROR: output folder already exists at $$settings{out}. --force to overwrite.";
   }
+  if($$settings{force}){
+    logmsg "WARNING: --force was specified and so any results in $$settings{out} will be overwritten";
+  }
   mkdir $$settings{out};
   mkdir $$settings{tempdir} if(!-e $$settings{tempdir});
 
@@ -47,9 +50,10 @@ sub mlstype{
     $sample =~ s/\.(fa|fasta|fna)$//;
     logmsg "Querying $sample against $hashDb";
     
-    my $outFasta = "$outdir/".basename($inFasta);
-    print "EToKi.py MLSType -i $inFasta -r $hashDb/ref.fasta -d $hashDb/etoki.csv -k $sample -o $outFasta.tmp"."\n";
-    system("EToKi.py MLSType -i $inFasta -r $hashDb/ref.fasta -d $hashDb/etoki.csv -k $sample -o $outFasta.tmp");
+    my $outFasta = "$outdir/$sample.etoki.fasta";
+    my $cmd = "EToKi.py MLSType -i $inFasta -r $hashDb/ref.fasta -d $hashDb/etoki.csv -k $sample -o $outFasta.tmp";
+    logmsg $cmd;
+    system($cmd);
     die "ERROR running EToKi.py MLSType: $!" if $?;
 
     mv("$outFasta.tmp", $outFasta) or die "ERROR: could not rename $outFasta.tmp to $outFasta: $!";
@@ -59,6 +63,7 @@ sub mlstype{
 sub readHashDb{
   my($dbDir, $settings) = @_;
 
+  # TODO the alleles files might be separated out to alleles.*.tsv probably
   my $alleles = readAlleles("$dbDir/alleles.tsv", $settings);
   my $ref = readRef("$dbDir/ref.fasta", $settings);
 

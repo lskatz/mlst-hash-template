@@ -9,7 +9,7 @@ use Digest::MD5 qw/md5_base64/;
 use Digest::SHA qw/sha1_base64 sha256_base64/;
 
 use version 0.77;
-our $VERSION="0.3";
+our $VERSION="0.5";
 
 # Make a hashing function that is global. It will reference
 # a hashing algorithm.
