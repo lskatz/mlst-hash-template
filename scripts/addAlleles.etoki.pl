@@ -149,7 +149,7 @@ sub writeEtokiToHashDb{
   print $profileFh "# ".join("\t", qw(scheme ST hash-type), @sortedLoci)."\n";
   print $profileFh join("\t",
     $$settings{scheme}, $ST, "md5", $allelesStr
-  );
+  ) . "\n";
   close $profileFh;
 }
 
